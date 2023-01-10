@@ -1,7 +1,7 @@
 const express = require("express");
 const mysql = require('mysql');
 const app = express()
-let port = 8000
+let port = 3306
 
 app.use(express.json())
 
@@ -10,14 +10,14 @@ const knex = require("knex")({
     connection: {
         host: "localhost",
         user: "root",
-        password: "Navgurukul123@",
-        database: "Todo"
+        password: "root",
+        database: "todo"
     }
 });
 
-knex.schema.hasTable("todo list").then((data) => {
+knex.schema.hasTable("todolist").then((data) => {
     if (!data){
-        return knex.schema.createTable("todo list" , (table) => {
+        return knex.schema.createTable("todolist" , (table) => {
             table.increments("id").primary(),
             table.string("status")
         })
@@ -25,7 +25,7 @@ knex.schema.hasTable("todo list").then((data) => {
 });
 
 app.post("/api/Todo" ,(req,res) => {
-    knex("todo list").insert({
+    knex("todolist").insert({
         status : req.body.status
     })
         .then(() => {
@@ -41,8 +41,8 @@ app.post("/api/Todo" ,(req,res) => {
 
 app.get("/api/Todo", (req,res) => {
     knex()
-        Select("*")
-        From("todo list")
+        .select("*")
+        .from("todolist")
         .then((data) => {
             res.send(data)
         })
@@ -53,9 +53,9 @@ app.get("/api/Todo", (req,res) => {
 
 app.get("/api/Todo/:id", (req,res) => {
     knex()
-        select("*")
-        From("todo list")
-        Where("id",req.params.id)
+        .select("*")
+        .from("todolist")
+        .where("id",req.params.id)
         .then((data) => {
             res.send(data)
         })
@@ -68,7 +68,7 @@ app.put("/api/Todo/:id", (req,res) => {
     knex.update({
         "status" : req.body.status
     })
-        .Table("todo list"),where("id", req.params.id)
+        .table("todolist").where("id", req.params.id)
         .then(() => {
             console.log("updated successfully....  ")
             res.send("updated successfully!..   ")
@@ -82,8 +82,8 @@ app.put("/api/Todo/:id", (req,res) => {
 
 
 app.delete("/api/Todo/:id", (req,res) => {
-    knex("todo list")
-        where({"id" : req.params.id}).del()
+    knex("todolist")
+        .where({"id" : req.params.id}).del()
         .then(() => {
             console.log("deleted Successfully")
             res.send("deleted Successfully ")
